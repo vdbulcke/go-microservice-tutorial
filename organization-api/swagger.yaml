@@ -1,0 +1,230 @@
+basePath: /api/beta2/
+consumes:
+- application/json
+definitions:
+  GenericAPIError:
+    description: GenericAPIError is a generic error message returned by a server
+    properties:
+      error:
+        type: string
+        x-go-name: Error
+      message:
+        type: string
+        x-go-name: Message
+    type: object
+    x-go-package: go-microservice-tutorial/organization-api/handlers/api
+  GenericError:
+    description: GenericError GenericError is a generic error message returned by
+      a server
+    properties:
+      message:
+        description: message
+        type: string
+        x-go-name: Message
+    type: object
+    x-go-package: go-microservice-tutorial/organization-api/sdk/models
+  Tenant:
+    description: Tenant defines the structure for an API tenant
+    properties:
+      description:
+        description: the description for this tenant
+        maxLength: 10000
+        type: string
+        x-go-name: Description
+      id:
+        $ref: '#/definitions/UUID'
+        description: the id for the tenant
+        format: int64
+        minimum: 1
+        type: integer
+        x-go-name: ID
+      name:
+        description: the name for this tenant
+        maxLength: 255
+        type: string
+        x-go-name: Name
+    required:
+    - kbo
+    - name
+    type: object
+    x-go-package: go-microservice-tutorial/organization-api/data
+  TenantCreate:
+    description: TenantCreate defines the structure for an API tenant create object
+    properties:
+      description:
+        description: the description for this tenant
+        maxLength: 10000
+        type: string
+        x-go-name: Description
+      name:
+        description: the name for this tenant
+        maxLength: 255
+        type: string
+        x-go-name: Name
+    required:
+    - name
+    type: object
+    x-go-package: go-microservice-tutorial/organization-api/data
+  TenantUpdate:
+    description: TenantUpdate defines the structure for an API tenant update object
+    properties:
+      description:
+        description: the description for this tenant
+        maxLength: 10000
+        type: string
+        x-go-name: Description
+      id:
+        $ref: '#/definitions/UUID'
+      name:
+        description: the name for this tenant
+        maxLength: 255
+        type: string
+        x-go-name: Name
+    required:
+    - name
+    type: object
+    x-go-package: go-microservice-tutorial/organization-api/data
+  UUID:
+    description: |-
+      A UUID is a 128 bit (16 byte) Universal Unique IDentifier as defined in RFC
+      4122.
+    items:
+      format: uint8
+      type: integer
+    type: array
+    x-go-package: github.com/google/uuid
+  ValidationError:
+    description: ValidationError ValidationError is a collection of validation error
+      messages
+    properties:
+      messages:
+        description: messages
+        items:
+          type: string
+        type: array
+        x-go-name: Messages
+    type: object
+    x-go-package: go-microservice-tutorial/organization-api/sdk/models
+info:
+  description: Documentation for Tenant API
+  title: of Tenant API
+  version: 1.0.0
+paths:
+  /tenants:
+    get:
+      description: Return a list of tenants from the database
+      operationId: listTenants
+      responses:
+        "200":
+          $ref: '#/responses/tenantsResponse'
+        "500":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - Tenants
+    post:
+      description: Create a new tenant
+      operationId: createTenant
+      parameters:
+      - description: Tenant data structure to Update or Create
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/TenantCreate'
+      responses:
+        "200":
+          $ref: '#/responses/tenantResponse'
+        "400":
+          $ref: '#/responses/errorResponse'
+        "409":
+          $ref: '#/responses/tenantResponse'
+        "500":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - Tenants
+    put:
+      description: Update a tenants details
+      operationId: updateTenant
+      parameters:
+      - description: Tenant data structure to Update or Create
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/TenantUpdate'
+      responses:
+        "204":
+          $ref: '#/responses/noContentResponse'
+        "400":
+          $ref: '#/responses/errorResponse'
+        "404":
+          $ref: '#/responses/errorResponse'
+        "500":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - Tenants
+  /tenants/{id}:
+    delete:
+      description: Delete a tenant details
+      operationId: deleteTenant
+      parameters:
+      - $ref: '#/definitions/UUID'
+        description: The id of the tenant for which the operation relates
+        in: path
+        name: id
+        required: true
+        x-go-name: ID
+      responses:
+        "201":
+          $ref: '#/responses/noContentResponse'
+        "404":
+          $ref: '#/responses/errorResponse'
+        "500":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - Tenants
+    get:
+      description: Return a list of tenants from the database
+      operationId: getTenant
+      parameters:
+      - $ref: '#/definitions/UUID'
+        description: The id of the tenant for which the operation relates
+        in: path
+        name: id
+        required: true
+        x-go-name: ID
+      responses:
+        "200":
+          $ref: '#/responses/tenantResponse'
+        "401":
+          $ref: '#/responses/errorResponse'
+        "404":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - Tenants
+produces:
+- application/json
+responses:
+  errorResponse:
+    description: Generic error message returned as a string
+    schema:
+      $ref: '#/definitions/GenericAPIError'
+  errorValidation:
+    description: Validation errors defined as an array of strings
+    schema:
+      $ref: '#/definitions/ValidationError'
+  noContentResponse:
+    description: No content is returned by this API endpoint
+  tenantResponse:
+    description: Data structure representing a single tenant
+    schema:
+      $ref: '#/definitions/Tenant'
+  tenantsResponse:
+    description: A list of tenants
+    schema:
+      items:
+        $ref: '#/definitions/Tenant'
+      type: array
+schemes:
+- http
+swagger: "2.0"
