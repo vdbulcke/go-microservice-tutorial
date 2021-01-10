@@ -23,8 +23,30 @@ definitions:
         x-go-name: Message
     type: object
     x-go-package: go-microservice-tutorial/organization-api/sdk/models
+  License:
+    description: License defines the structure for an API tenant
+    properties:
+      id:
+        $ref: '#/definitions/UUID'
+      license:
+        description: the License for the license
+        type: string
+        x-go-name: License
+      tenant_id:
+        $ref: '#/definitions/UUID'
+    required:
+    - license
+    - tenant_id
+    type: object
+    x-go-package: go-microservice-tutorial/organization-api/data
+  Licenses:
+    description: Licenses a slice of license
+    items:
+      $ref: '#/definitions/License'
+    type: array
+    x-go-package: go-microservice-tutorial/organization-api/data
   Tenant:
-    description: Tenant defines the structure for an API tenant
+    description: Tenant Tenant defines the structure for an API tenant
     properties:
       description:
         description: the description for this tenant
@@ -33,21 +55,23 @@ definitions:
         x-go-name: Description
       id:
         $ref: '#/definitions/UUID'
-        description: the id for the tenant
         format: int64
-        minimum: 1
         type: integer
-        x-go-name: ID
+      kbo:
+        description: the KBO for the tenant
+        pattern: '[a-z]+-[a-z]+-[a-z]+'
+        type: string
+        x-go-name: KBO
       name:
         description: the name for this tenant
         maxLength: 255
         type: string
         x-go-name: Name
     required:
-    - kbo
     - name
+    - kbo
     type: object
-    x-go-package: go-microservice-tutorial/organization-api/data
+    x-go-package: go-microservice-tutorial/organization-api/sdk/models
   TenantCreate:
     description: TenantCreate defines the structure for an API tenant create object
     properties:
@@ -81,6 +105,7 @@ definitions:
         type: string
         x-go-name: Name
     required:
+    - id
     - name
     type: object
     x-go-package: go-microservice-tutorial/organization-api/data
@@ -110,6 +135,72 @@ info:
   title: of Tenant API
   version: 1.0.0
 paths:
+  /license/generate_license_for_tenant_id/{id}:
+    get:
+      description: Return a license newly created license
+      operationId: generateLicense
+      parameters:
+      - $ref: '#/definitions/UUID'
+        description: The id of the object for which the operation relates
+        in: path
+        name: id
+        required: true
+        x-go-name: ID
+      responses:
+        "200":
+          $ref: '#/responses/licenseResponse'
+        "401":
+          $ref: '#/responses/errorResponse'
+        "404":
+          $ref: '#/responses/errorResponse'
+        "500":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - License
+  /license/get_license_by_id/{id}:
+    get:
+      description: Return a license from the database
+      operationId: getLicense
+      parameters:
+      - $ref: '#/definitions/UUID'
+        description: The id of the object for which the operation relates
+        in: path
+        name: id
+        required: true
+        x-go-name: ID
+      responses:
+        "200":
+          $ref: '#/responses/licenseResponse'
+        "401":
+          $ref: '#/responses/errorResponse'
+        "404":
+          $ref: '#/responses/errorResponse'
+        "500":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - License
+  /license/get_licenses_by_tenant_id/{id}:
+    get:
+      description: Return a list of licenses from the database
+      operationId: listLicenses
+      parameters:
+      - $ref: '#/definitions/UUID'
+        description: The id of the object for which the operation relates
+        in: path
+        name: id
+        required: true
+        x-go-name: ID
+      responses:
+        "200":
+          $ref: '#/responses/licensesResponse'
+        "401":
+          $ref: '#/responses/errorResponse'
+        "404":
+          $ref: '#/responses/errorResponse'
+        "500":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - License
   /tenants:
     get:
       description: Return a list of tenants from the database
@@ -213,6 +304,18 @@ responses:
     description: Validation errors defined as an array of strings
     schema:
       $ref: '#/definitions/ValidationError'
+  licenseResponse:
+    description: Data structure representing a single license
+    schema:
+      items:
+        $ref: '#/definitions/License'
+      type: array
+  licensesResponse:
+    description: Data structure representing a list of licenses
+    schema:
+      items:
+        $ref: '#/definitions/Licenses'
+      type: array
   noContentResponse:
     description: No content is returned by this API endpoint
   tenantResponse:
