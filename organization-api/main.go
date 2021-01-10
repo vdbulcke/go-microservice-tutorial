@@ -8,25 +8,40 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/hashicorp/go-hclog"
+
 	"go-microservice-tutorial/organization-api/data"
 	"go-microservice-tutorial/organization-api/data/database"
 	"go-microservice-tutorial/organization-api/data/database/migration"
 	"go-microservice-tutorial/organization-api/handlers/api"
+	"go-microservice-tutorial/organization-api/handlers/licensehandler"
 	"go-microservice-tutorial/organization-api/handlers/tenantshandler"
 
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/gorilla/handlers"
 
 	"github.com/gorilla/mux"
+	"google.golang.org/grpc"
 )
 
 var bindAddress = ":9090"
 
 func main() {
 
+	// initializing resources
 	l := log.New(os.Stdout, "org-api ", log.LstdFlags)
 	v := data.NewValidation()
 	db := database.NewSqliteDB("./sqlite.db")
+	// new logger
+	logger := hclog.Default()
+
+	// grpc client for license service
+	conn, err := grpc.Dial("localhost:9092", grpc.WithInsecure())
+	if err != nil {
+		panic(err)
+	}
+
+	defer conn.Close()
 
 	// migrate DB & gen data
 	migration.DBMigration(db)
@@ -34,6 +49,7 @@ func main() {
 
 	// create the handlers
 	ph := tenantshandler.NewTenants(l, v, db)
+	licenseHandler := licensehandler.NewLicenseHandler(logger, v, db, conn)
 
 	// create an api
 	apiCommon := api.NewAPI()
@@ -67,7 +83,12 @@ func main() {
 
 	deleteR := apiRouter.Methods(http.MethodDelete).Subrouter()
 	// deleteR.HandleFunc("/tenants/{id:[0-9]+}", api.APIHandler(ph.Delete))
-	deleteR.Handle("/tenants/{id:[0-9]+}", api.APIHandler{Handler: ph.Delete})
+	deleteR.Handle("/tenants/{id}", api.APIHandler{Handler: ph.Delete})
+
+	// License API
+	getR.Handle("/license/get_license_by_id/{id}", api.APIHandler{Handler: licenseHandler.GetLicenseByID})
+	getR.Handle("/license/get_licenses_by_tenant_id/{id}", api.APIHandler{Handler: licenseHandler.GetLicensesByTenantID})
+	getR.Handle("/license/generate_license_for_tenant_id/{id}", api.APIHandler{Handler: licenseHandler.GenerateLicenceForTenant})
 
 	// handler for documentation
 	opts := middleware.RedocOpts{SpecURL: "/swagger.yaml"}
