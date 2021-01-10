@@ -50,7 +50,7 @@ type TenantCreate struct {
 	//
 	// required: true
 	// max length: 255
-	Name string `json:"name"`
+	Name string `json:"name" validate:"required"`
 
 	// the description for this tenant
 	//
@@ -64,14 +64,14 @@ type TenantCreate struct {
 type TenantUpdate struct {
 	// the id for the tenant
 	//
-	// required: false
-	ID uuid.UUID `json:"id"`
+	// required: true
+	ID uuid.UUID `json:"id"  validate:"required"`
 
 	// the name for this tenant
 	//
 	// required: true
 	// max length: 255
-	Name string `json:"name"`
+	Name string `json:"name"  validate:"required"`
 
 	// the description for this tenant
 	//
@@ -127,8 +127,13 @@ func GetTenantByID(id uuid.UUID, db *database.DB) (*Tenant, error) {
 
 	var tenant Tenant
 
-	result := db.Client.Find(&tenant, id)
+	result := db.Client.First(&tenant, id)
 	if result.Error != nil {
+		return nil, ErrTenantNotFound
+	}
+
+	// check if result is empty
+	if result.RowsAffected == 0 {
 		return nil, ErrTenantNotFound
 	}
 
