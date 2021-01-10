@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+
+
+// LicenseService service for getting license
+service LicenseService {
+    // NewLicense generates a new license of the tenant
+    rpc NewLicense(LicenseRequest) returns (License);
+}
+
+
+// License defines a license
+message License {
+    // TenantID owner of the license
+    string TenantID = 1;
+    // License the license value (jwt)
+    string License = 2;
+}
+
+
+
+// LicenseRequest 
+message LicenseRequest {
+    // TenantID owner of the license
+    string TenantID = 1;
+    // OrganizationName name of the organization 
+    string OrganizationName = 2;
+}
+
+
