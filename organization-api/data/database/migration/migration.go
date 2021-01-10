@@ -2,7 +2,7 @@ package migration
 
 import (
 	"fmt"
-	tenantdata "go-microservice-tutorial/organization-api/data"
+	"go-microservice-tutorial/organization-api/data"
 	"go-microservice-tutorial/organization-api/data/database"
 	"log"
 )
@@ -11,15 +11,16 @@ import (
 func DBMigration(db *database.DB) {
 
 	// make sure Tenant is create in DB
-	db.Client.AutoMigrate(&tenantdata.Tenant{})
-
+	db.Client.AutoMigrate(&data.Tenant{})
+	// make sure Tenant is create in DB
+	db.Client.AutoMigrate(&data.License{})
 }
 
 // GenerateData insert some data in DB
 func GenerateData(db *database.DB) {
 
-	var tenantList = []*tenantdata.Tenant{
-		&tenantdata.Tenant{
+	var tenantList = []*data.Tenant{
+		&data.Tenant{
 			Name:        "ACME",
 			Description: "ACME Corp",
 		},
@@ -27,7 +28,7 @@ func GenerateData(db *database.DB) {
 
 	// insert in DB
 	for _, t := range tenantList {
-		var temp tenantdata.Tenant
+		var temp data.Tenant
 
 		searchres := db.Client.Where("name = ?", t.Name).First(&temp)
 		if searchres.Error == nil {
