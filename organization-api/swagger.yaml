@@ -140,11 +140,11 @@ paths:
       description: Return a license newly created license
       operationId: generateLicense
       parameters:
-      - $ref: '#/definitions/UUID'
-        description: The id of the object for which the operation relates
+      - description: The id of the object for which the operation relates
         in: path
         name: id
         required: true
+        type: string
         x-go-name: ID
       responses:
         "200":
@@ -159,24 +159,20 @@ paths:
       - License
   /license/get_license_by_id/{id}:
     get:
-      description: Return a license from the database
+      description: |-
+        Return a license from the database
+        200: licenseResponse
+        404: errorResponse
+        401: errorResponse
+        500: errorResponse
       operationId: getLicense
       parameters:
-      - $ref: '#/definitions/UUID'
-        description: The id of the object for which the operation relates
+      - description: The id of the object for which the operation relates
         in: path
         name: id
         required: true
+        type: string
         x-go-name: ID
-      responses:
-        "200":
-          $ref: '#/responses/licenseResponse'
-        "401":
-          $ref: '#/responses/errorResponse'
-        "404":
-          $ref: '#/responses/errorResponse'
-        "500":
-          $ref: '#/responses/errorResponse'
       tags:
       - License
   /license/get_licenses_by_tenant_id/{id}:
@@ -184,11 +180,11 @@ paths:
       description: Return a list of licenses from the database
       operationId: listLicenses
       parameters:
-      - $ref: '#/definitions/UUID'
-        description: The id of the object for which the operation relates
+      - description: The id of the object for which the operation relates
         in: path
         name: id
         required: true
+        type: string
         x-go-name: ID
       responses:
         "200":
@@ -259,11 +255,11 @@ paths:
       description: Delete a tenant details
       operationId: deleteTenant
       parameters:
-      - $ref: '#/definitions/UUID'
-        description: The id of the tenant for which the operation relates
+      - description: The id of the tenant for which the operation relates
         in: path
         name: id
         required: true
+        type: string
         x-go-name: ID
       responses:
         "201":
@@ -278,11 +274,11 @@ paths:
       description: Return a list of tenants from the database
       operationId: getTenant
       parameters:
-      - $ref: '#/definitions/UUID'
-        description: The id of the tenant for which the operation relates
+      - description: The id of the tenant for which the operation relates
         in: path
         name: id
         required: true
+        type: string
         x-go-name: ID
       responses:
         "200":

@@ -91,8 +91,10 @@ func main() {
 	getR.Handle("/license/generate_license_for_tenant_id/{id}", api.APIHandler{Handler: licenseHandler.GenerateLicenceForTenant})
 
 	// handler for documentation
-	opts := middleware.RedocOpts{SpecURL: "/swagger.yaml"}
-	sh := middleware.Redoc(opts, nil)
+	// opts := middleware.RedocOpts{SpecURL: "/swagger.yaml"}
+	// sh := middleware.Redoc(opts, nil)
+	opts := middleware.SwaggerUIOpts{SpecURL: "/swagger.yaml"}
+	sh := middleware.SwaggerUI(opts, nil)
 
 	// Doc Handers
 	getDoc := mainRouter.Methods(http.MethodGet).Subrouter()

@@ -18,8 +18,6 @@ package licensehandler
 import (
 	"go-microservice-tutorial/organization-api/data"
 	"go-microservice-tutorial/organization-api/handlers/api"
-
-	"github.com/google/uuid"
 )
 
 //
@@ -55,5 +53,6 @@ type objectIDParamsWrapper struct {
 	// The id of the object for which the operation relates
 	// in: path
 	// required: true
-	ID uuid.UUID `json:"id"`
+	// ID uuid.UUID `json:"id"`
+	ID string `json:"id"`
 }

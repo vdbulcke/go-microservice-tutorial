@@ -18,8 +18,6 @@ package tenantshandler
 import (
 	"go-microservice-tutorial/organization-api/data"
 	"go-microservice-tutorial/organization-api/handlers/api"
-
-	"github.com/google/uuid"
 )
 
 //
@@ -84,5 +82,5 @@ type tenantIDParamsWrapper struct {
 	// The id of the tenant for which the operation relates
 	// in: path
 	// required: true
-	ID uuid.UUID `json:"id"`
+	ID string `json:"id"`
 }

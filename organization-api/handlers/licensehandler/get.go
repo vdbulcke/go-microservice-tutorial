@@ -8,7 +8,6 @@ import (
 
 // swagger:route GET /license/get_license_by_id/{id} License getLicense
 // Return a license from the database
-// responses:
 //	200: licenseResponse
 //	404: errorResponse
 //  401: errorResponse
